@@ -29,11 +29,9 @@ echo "What is the name of the multi-platform stack or product you are creating?"
 read MY_PRODUCT
 cordova create $MY_PRODUCT com.example.$MY_PRODUCT $MY_PRODUCT
 cd $MY_PRODUCT
-read
 cordova platform add ios
 cordova prepare
 #TODO: open http://stackoverflow.com/questions/10379622/how-to-run-iphone-emulator-without-starting-xcode
-read
 cd ~/Desktop/UP/$MY_PRODUCT/platforms/ios/
 echo "You may now run project $MY_PRODUCT via the Xcode iOS emulator in your other window"
 open $MY_PRODUCT.xcodeproj
@@ -42,9 +40,10 @@ echo "Is that cool? You will need to confgire Androids SDK manager manually to i
 read
 brew rm android-sdk
 brew install android-sdk
-echo "The prompt will soon bitch about missing platform-tools, when it does, go to the Android SDK manager and select 1) Platform Tools, 2) Build Tools 3)an Android version , and the versions of Android you want to support. Accept the agrements and install. Wait patiently, this may take a while. UGH - fuck, hate waiting."
+echo "When the Android ADT manager opens, check and approve sdk tools, build tools, platform tools and select at least one Android version"
+
 #Wrap this android in some sort of if. It hangs here. For now, opening a new tab prior
-bash main_part_2.sh
+
 echo "Once finished installing the Android crap, type Control C (ONE TIME!) to exit this step"
 #TODO : this other process needs to be givin time or we need to kick this off after the android SDKs are installed - now we get Error: Missing platform-tools because it fires too early.
 android
@@ -77,15 +76,7 @@ echo "ionic should be installed now - press enter and we'll fire up the local se
 read
 cd ~/Desktop/UP/$MY_PRODUCT/ionic
 bash run_ionic.sh
-#TODO _ this is where we fail, grunt not working
-bash run_grunt.sh
 echo "Let's see Ionic in the browser for the first time"
-read
-open http://localhost:8000/examples/starters/
-open http://localhost:8000/test/
-echo "OK, now we are going move the ionic files over to cordovas www dir"
-echo "cool?"
-read
 #NOTE: this copies ionic over to corodva
 # open http://ionicframework.com/docs/guide/installation.html
 cd ~/Desktop/UP/$MY_PRODUCt/ionic
@@ -101,22 +92,51 @@ echo "building android project with Cordova and Ionic. Sec..."
 #TODO 3: npm install -g ios-sim find out what thats about. 
 echo "installing something that will allow you to simulate in ios from the cmd line :)"
 npm install -g ios-sim
+npm install -g ios-deploy
+echo "cool, installing ionic seed and injecting seed into cordova www root"
+read
+
+cd ~/Desktop/UP/$MY_PRODUCT/
+read
+git clone git@github.com:frangucc/ionic-angular-cordova-seed.git
+cd ~/Desktop/UP/$MY_PRODUCT/
+rm -r -f www
+cd ionic-angular-cordova-seed
+
+echo "awesome, we shold be able to get a sweet ionic seed running in the browser first. If this works, then we'll emulate in android, ios and blackberry next."
+mv -f ~/Desktop/UP/CST/ionic-angular-cordova-seed/* ~/Desktop/UP/CST/
+
+echo "firing up webserver"
+cd ~/Desktop/UP/$MY_PRODUCT/www
+python -m SimpleHTTPServer 8001
+open http://localhost:8001
+
+cd ~/DesktopUP/$MY_PRODUCT/www
+npm install -g grunt-cli
+npm install grunt --save-dev
+npm install grunt-contrib-uglify
+npm install grunt-contrib-watch --save-dev
+npm install grunt-contrib-jshint
+npm install grunt-contrib-nodeunit
+npm install grunt-contrib-internal
 
 
-
-echo "Opening your new android app in the emulator"
+echo "Opening your new android app in the emulator. Yes?"
+read
 #TODO: when all goes well, start emulating in as many devices as possible.
-cordova emulate android
 cordova build android
-cordova emulate ios
+cordova emulate android
+
 cordova build ios
+cordova emulate ios
+
 
 
 ###############################################################################
 ###### now we install yeoman bower, etc. and start injections #################
 ###############################################################################
-cd ~/Desktop/UP/$MY_PRODUCT/www
-bash yeoman.sh
+# cd ~/Desktop/UP/$MY_PRODUCT/www
+# bash yeoman.sh
 
 
 
